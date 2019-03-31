@@ -3,13 +3,17 @@
 /* globals MediaRecorder */
 // Spec is at http://dvcs.w3.org/hg/dap/raw-file/tip/media-stream-capture/RecordingProposal.html
 
-var constraints = {audio:true,video:{width:{min:320,ideal:320,max:640 },height:{ min:240,ideal:240,max:480},framerate:30}};
+var constraints = {
+	audio:true,
+	// video:{width:{min:320,ideal:320,max:640 },height:{ min:240,ideal:240,max:480},framerate:30}
+};
 
 var recBtn = document.querySelector('button#rec');
 var pauseResBtn = document.querySelector('button#pauseRes');
 var stopBtn = document.querySelector('button#stop');
 
-var videoElement = document.querySelector('video');
+var videoElement = document.querySelector('audio#monitor');
+var videoElementRecording = document.querySelector('audio#recording');
 var dataElement = document.querySelector('#data');
 var downloadLink = document.querySelector('a#downloadLink');
 
@@ -44,8 +48,8 @@ if (!navigator.mediaDevices.getUserMedia){
 					}
 				});
 				
-				videoElement.srcObject = localStream;
-				videoElement.play();
+				// videoElement.srcObject = localStream;
+				// videoElement.play();
 				
 				try {
 					window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -54,17 +58,17 @@ if (!navigator.mediaDevices.getUserMedia){
 					log('Web Audio API not supported.');
 				  }
 
-				  soundMeter = window.soundMeter = new SoundMeter(window.audioContext);
-				  soundMeter.connectToSource(localStream, function(e) {
-					if (e) {
-						log(e);
-						return;
-					}else{
-					   /*setInterval(function() {
-						  log(Math.round(soundMeter.instant.toFixed(2) * 100));
-					  }, 100);*/
-					}
-				  });
+				  // soundMeter = window.soundMeter = new SoundMeter(window.audioContext);
+				  // soundMeter.connectToSource(localStream, function(e) {
+					// if (e) {
+					// 	log(e);
+					// 	return;
+					// }else{
+					//    /*setInterval(function() {
+					// 	  log(Math.round(soundMeter.instant.toFixed(2) * 100));
+					//   }, 100);*/
+					// }
+				  // });
 				
 			}).catch(function(err) {
 				/* handle the error */
@@ -127,13 +131,15 @@ function onBtnRecordClicked (){
 		mediaRecorder.onstop = function(){
 			log('mediaRecorder.onstop, mediaRecorder.state = ' + mediaRecorder.state);
 
-			var blob = new Blob(chunks, {type: "video/webm"});
+			// var blob = new Blob(chunks, {type: "video/webm"});
+			var blob = new Blob(chunks, {type: "audio/wav"});
 			chunks = [];
 
 			var videoURL = window.URL.createObjectURL(blob);
 
 			downloadLink.href = videoURL;
-			videoElement.src = videoURL;
+			// videoElement.src = videoURL;
+			videoElementRecording.src = videoURL;
 			downloadLink.innerHTML = 'Download video file';
 
 			var rand =  Math.floor((Math.random() * 10000000));
